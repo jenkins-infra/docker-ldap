@@ -1,0 +1,7 @@
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
+
+COPY crontabs/backup /etc/crontabs/ldap
+
+ENTRYPOINT ["crond","-f","-d","8"]
