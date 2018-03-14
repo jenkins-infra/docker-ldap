@@ -1,0 +1,10 @@
+dn: cn=config
+
+modify: olcTLSCACertificateFile
+olcTLSCACertificateFile: /etc/openldap/ssl/OPENLDAP_SSL_CA
+-
+modify: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/ssl/OPENLDAP_SSL_CRT
+-
+modify: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/ssl/OPENLDAP_SSL_KEY

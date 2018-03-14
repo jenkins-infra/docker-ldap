@@ -2,6 +2,10 @@ ARG BASE_IMAGE
 
 FROM $BASE_IMAGE
 
-COPY crontabs/backup /etc/crontabs/ldap
+ENV OPENLDAP_ENDPOINT ldap.jenkins.io
+
+RUN apk add --no-cache curl
+
+COPY crontabs/ldap /etc/crontabs/ldap
 
 ENTRYPOINT ["crond","-f","-d","8"]

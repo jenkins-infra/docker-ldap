@@ -1,5 +1,7 @@
 FROM alpine:3.7
 
+ENV OPENLDAP_CONFIG_ADMIN_DN 'cn=admin,cn=config'
+ENV OPENLDAP_CONFIG_ADMIN_PASSWORD config
 ENV OPENLDAP_ADMIN_DN 'cn=admin,dc=jenkins-ci,dc=org'
 ENV OPENLDAP_ADMIN_PASSWORD 's3cr3t'
 ENV OPENLDAP_BACKUP_PATH /var/lib/openldap/openldap-data
@@ -42,6 +44,7 @@ RUN \
   openssl
 
 COPY config/slapd.conf /etc/openldap/slapd.conf
+COPY config/tls.ldif /etc/openldap/tls.ldif
 
 RUN \
   mkdir /etc/openldap/ssl && \
