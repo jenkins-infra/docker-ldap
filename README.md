@@ -1,5 +1,6 @@
 # OpenLdap
 OpenLdap docker image used for Jenkins Infrastructure Project
+This project defines two docker images, one that run openldap and a second one that run a cron daemon who periodically backup the database
 
 ### Certificate
 This openldap container require valid SSL certificate located in /etc/openldap/ssl where each filename is one of the following variable.

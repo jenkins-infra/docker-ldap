@@ -10,7 +10,7 @@ properties([
 node('docker') {
     checkout scm
     def containerBase
-    def containerBackup
+    def containerCron
     stage('Prepare Container') {
         timestamps {
             sh 'git rev-parse HEAD > GIT_COMMIT'
@@ -18,7 +18,7 @@ node('docker') {
             def imageTag = "${env.BUILD_ID}-build${shortCommit}"
             echo "Creating the container ${imageName}:${imageTag}"
             containerBase = docker.build("${imageName}:${imageTag}")
-            containerBackup = docker.build("${imageName}:backup-${imageTag}", "--build-arg BASE_IMAGE=${imageName}:${imageTag} -f Dockerfile.backup .")
+            containerCron = docker.build("${imageName}:cron-${imageTag}", "--build-arg BASE_IMAGE=${imageName}:${imageTag} -f Dockerfile.cron .")
         }
     }
 
@@ -28,7 +28,7 @@ node('docker') {
             infra.withDockerCredentials {
                 timestamps {
                   containerBase.push()
-                  containerBackup.push()
+                  containerCron.push()
                 }
             }
         }

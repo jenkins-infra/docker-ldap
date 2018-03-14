@@ -3,14 +3,13 @@
 IMAGE = 'jenkinsciinfra/ldap'
 TAG = $(shell git rev-parse HEAD | cut -c1-6)
 
-
 build:
 	docker build --no-cache -t $(IMAGE):$(TAG) .
-	docker build --build-arg BASE_IMAGE=$(IMAGE):$(TAG) -t $(IMAGE):backup-$(TAG) -f Dockerfile.backup .
+	docker build --build-arg BASE_IMAGE=$(IMAGE):$(TAG) -t $(IMAGE):cron-$(TAG) -f Dockerfile.cron .
 
 publish:
 	docker push $(IMAGE):$(TAG)
-	docker push $(IMAGE):backup-$(TAG)
+	docker push $(IMAGE):cron-$(TAG)
 
 shell:
 	@docker run -i -t --rm \
