@@ -9,9 +9,6 @@ This openldap container require valid SSL certificate located in /etc/openldap/s
 * OPENLDAP_SSL_CRT
 * OPENLDAP_SSL_CA
 
-Remark: As we aren't using dynamic configuration, we must restart the application if SSL certificates changed
-This should be improve in the future in order to use LetsEncrypt certificate
-
 ## Scripts:
 This docker image contains various scripts to run different actions.
 
