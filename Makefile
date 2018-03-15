@@ -48,7 +48,8 @@ gen_cert:
 	   -keyout ssl/ca.key \
        -x509 \
 	   -days 365 \
-	   -out ssl/ca.pem
+	   -out ssl/ca.pem\
+	   -subj "/C=BE/O=JENKINSPROJECT/CN=sandbox.jenkins.io"
 	openssl x509 -req \
 		-in ssl/ldap.csr \
 		-CA ssl/ca.pem \
