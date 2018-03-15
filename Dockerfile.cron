@@ -8,4 +8,4 @@ RUN apk add --no-cache curl
 
 COPY crontabs/ldap /etc/crontabs/ldap
 
-ENTRYPOINT ["crond","-f","-d","8"]
+ENTRYPOINT [ "/sbin/tini","--", "crond","-f","-d","8" ]

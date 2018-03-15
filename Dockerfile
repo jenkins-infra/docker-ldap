@@ -41,7 +41,8 @@ RUN \
   openldap-back-mdb \
   openldap-clients \
   openldap \
-  openssl
+  openssl \
+  tini
 
 COPY config/slapd.conf /etc/openldap/slapd.conf
 COPY config/tls.ldif /etc/openldap/tls.ldif
@@ -54,4 +55,4 @@ RUN \
   chown ldap:ldap /var/lib/openldap/openldap-data && \
   chown ldap:ldap /var/run/openldap
 
-ENTRYPOINT /entrypoint/start
+ENTRYPOINT [ "/sbin/tini","--","/entrypoint/start" ]
