@@ -45,7 +45,6 @@ RUN \
   tini
 
 COPY config/slapd.conf /etc/openldap/slapd.conf
-COPY config/tls.ldif /etc/openldap/tls.ldif
 
 RUN \
   mkdir /etc/openldap/ssl && \
