@@ -26,5 +26,5 @@ then
     #su ldap -s /bin/sh -c "slapadd -f /etc/openldap/slapd.conf -l \"${OPENLDAP_BACKUP_PATH}/${OPENLDAP_RESTORE_FILE}\""
     su ldap -s /bin/sh -c "ldapmodify -H ldap:/// -x -w \"${OPENLDAP_ADMIN_PASSWORD}\" -D \"${OPENLDAP_ADMIN_DN}\" -a -c -f \"${OPENLDAP_BACKUP_PATH}/${OPENLDAP_RESTORE_FILE}\""
 else
-    echo "Extension not recognise, must be either .gz or .ldif"
+    echo "Extension not recognised, must be either .gz or .ldif"
 fi
