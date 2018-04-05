@@ -1,0 +1,69 @@
+#!/bin/bash
+
+: "${OPENLDAP_SSL_KEY:?Ssl key required}"
+: "${OPENLDAP_SSL_CRT:?Ssl certificate required}"
+: "${OPENLDAP_SSL_CA:?CA ssl certificate required}"
+: "${OPENLDAP_ADMIN_DN:?Admin DN required}"
+: "${OPENLDAP_ADMIN_PASSWORD:?Admin password required}"
+: "${OPENLDAP_DATABASE:? Ldap database required}"
+: "${OPENLDAP_DEBUG_LEVEL:? Ldap database loglevel required cfr:'Slapd config'}"
+
+# Test if ssl certs exist and are valid
+function is_ssl_certs {
+  if [ ! -f "/etc/openldap/ssl/$OPENLDAP_SSL_KEY" ]; then exit "File /etc/openldap/ssl/${OPENLDAP_SSL_KEY} doesn't exist" ;fi
+  if [ ! -f "/etc/openldap/ssl/$OPENLDAP_SSL_CRT" ]; then exit "File /etc/openldap/ssl/${OPENLDAP_SSL_CRT} doesn't exist" ;fi
+  if [ ! -f "/etc/openldap/ssl/$OPENLDAP_SSL_CA" ]; then exit "File /etc/openldap/ssl/${OPENLDAP_SSL_CA} doesn't exist" ;fi
+  openssl verify -CAfile "/etc/openldap/ssl/${OPENLDAP_SSL_CA}" "/etc/openldap/ssl/${OPENLDAP_SSL_CRT}"
+}
+
+# Configure /etc/slapd.conf based on env variable
+function configure_slapd() {
+  # Generate Admin Password Hash
+  local openldap_admin_password_md5
+  openldap_admin_password_md5=$(slappasswd -s "$OPENLDAP_ADMIN_PASSWORD")
+  echo "Configure slapd"
+  # Use # instead of / admin password hash may contain / character
+  sed -i "s#OPENLDAP_CONFIG_ADMIN_DN#${OPENLDAP_CONFIG_ADMIN_DN}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_CONFIG_ADMIN_PASSWORD#${OPENLDAP_CONFIG_ADMIN_PASSWORD}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_DATABASE#${OPENLDAP_DATABASE}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_ADMIN_DN#${OPENLDAP_ADMIN_DN}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_ADMIN_PASSWORD#$openldap_admin_password_md5#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/openldap/tls.ldif
+  sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/openldap/tls.ldif
+  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/openldap/tls.ldif
+
+  # Dynamic configuration is cumbersome to update, so we convert the static configuration file
+  # to ldif
+  if [ ! -d '/etc/openldap/slapd.d' ]; then
+      mkdir /etc/openldap/slapd.d
+  fi
+  slaptest -u -f /etc/openldap/slapd.conf
+
+  # It's more convenient to update slapd.conf and then convert it to the ldiff format
+  # than editing slapd.d files.
+  # Convert config file to config dir even if database doesn't exist.
+  slaptest -f /etc/openldap/slapd.conf -F /etc/openldap/slapd.d/ | true
+
+  chown -R ldap:ldap /etc/openldap/slapd.d /var/lib/openldap
+  chmod 0750 -R /etc/openldap/slapd.d
+}
+
+function start_slapd() {
+  echo "Start slapd"
+  exec /usr/sbin/slapd -h "ldap:/// ldaps:///" -u ldap -g ldap -d"${OPENLDAP_DEBUG_LEVEL}" -F /etc/openldap/slapd.d
+}
+
+function backup(){
+  local timestamp
+  timestamp=$(date '+%Y%m%d%H%M')
+
+  ldapsearch -LLL -w "${OPENLDAP_ADMIN_PASSWORD}" -D "${OPENLDAP_ADMIN_DN}" -b "${OPENLDAP_DATABASE}" | gzip > "${OPENLDAP_BACKUP_PATH}/${timestamp}.${OPENLDAP_BACKUP_FILE}.gz"
+
+  cp "${OPENLDAP_BACKUP_PATH}/${timestamp}.${OPENLDAP_BACKUP_FILE}.gz" "${OPENLDAP_BACKUP_PATH}/${OPENLDAP_BACKUP_FILE}.gz"
+
+  echo "Backup ${OPENLDAP_BACKUP_PATH}/${timestamp}.${OPENLDAP_BACKUP_FILE}.gz created"
+  echo "Backup ${OPENLDAP_BACKUP_PATH}/${OPENLDAP_BACKUP_FILE}.gz created"
+}

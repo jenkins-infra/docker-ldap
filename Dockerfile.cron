@@ -1,0 +1,11 @@
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
+
+ENV OPENLDAP_ENDPOINT ldap.jenkins.io
+
+RUN apk add --no-cache curl
+
+COPY crontabs/ldap /etc/crontabs/ldap
+
+ENTRYPOINT [ "/sbin/tini","--", "crond","-f","-d","8" ]
