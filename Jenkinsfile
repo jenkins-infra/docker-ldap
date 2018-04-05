@@ -16,9 +16,11 @@ node('docker') {
             sh 'git rev-parse HEAD > GIT_COMMIT'
             shortCommit = readFile('GIT_COMMIT').take(6)
             def imageTag = "${env.BUILD_ID}-build${shortCommit}"
-            echo "Creating the container ${imageName}:${imageTag}"
-            containerBase = docker.build("${imageName}:${imageTag}")
-            containerCron = docker.build("${imageName}:cron-${imageTag}", "--build-arg BASE_IMAGE=${imageName}:${imageTag} -f Dockerfile.cron .")
+            env.BASE_IMAGE = "${imageName}:${imageTag}"
+            env.CRON_IMAGE = "${imageName}:cron-${imageTag}"
+            echo "Creating the container ${env.BASE_IMAGE}"
+            containerBase = docker.build("${env.BASE_IMAGE}")
+            containerCron = docker.build("${env.CRON_IMAGE}", "--build-arg BASE_IMAGE=${env.BASE_IMAGE} -f Dockerfile.cron .")
         }
     }
 
