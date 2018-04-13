@@ -31,9 +31,9 @@ function configure_slapd() {
   sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/openldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/openldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/openldap/slapd.conf
-  sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/openldap/tls.ldif
-  sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/openldap/tls.ldif
-  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/openldap/tls.ldif
+  sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/openldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/openldap/slapd.conf
 
   # Dynamic configuration is cumbersome to update, so we convert the static configuration file
   # to ldif
