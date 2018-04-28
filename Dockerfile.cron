@@ -6,6 +6,9 @@ ENV OPENLDAP_ENDPOINT ldap.jenkins.io
 
 RUN apk add --no-cache curl
 
-COPY crontabs/ldap /etc/crontabs/ldap
+# Backup entrypoint needs to be run as root as it also configure slapd.conf.
+# This behaviour must be changed to be run as ldap user but it requires more testing.
+
+COPY crontabs/ldap /etc/crontabs/root
 
 ENTRYPOINT [ "/sbin/tini","--", "crond","-f","-d","8" ]
