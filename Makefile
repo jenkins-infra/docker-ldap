@@ -18,7 +18,7 @@ cron-shell:
 		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
-		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
+		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
 		--entrypoint /bin/bash \
 		--name shell-cron $(IMAGE):cron-$(TAG)
 
@@ -29,7 +29,7 @@ shell:
 		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
-		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
+		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
 		--entrypoint /bin/bash \
 		--name ldap $(IMAGE):$(TAG)
 cron-mock:
@@ -39,7 +39,7 @@ cron-mock:
 		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
-		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
+		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
 		--name cron-ldap $(IMAGE):cron-$(TAG)
 
 mock:
@@ -49,7 +49,7 @@ mock:
 		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
-		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
+		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
 		--name ldap $(IMAGE):$(TAG)
 
 		#-e OPENLDAP_DEBUG_LEVEL='3'\
