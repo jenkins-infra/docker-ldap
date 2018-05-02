@@ -15,10 +15,10 @@ shell:
 	@docker run -i -t --rm \
 		-p 389:389 \
 		-p 636:636 \
-		-v `pwd`/ssl/ca.pem:/etc/openldap/ssl/cacert.pem:ro \
-		-v `pwd`/ssl/ldap.pem:/etc/openldap/ssl/cert.pem:ro \
-		-v `pwd`/ssl/ldap.key:/etc/openldap/ssl/privkey.key:ro \
-		-v `pwd`/mock.ldif:/var/lib/openldap/openldap-data/backup.latest.ldif \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
+		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
+		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
 		--entrypoint /bin/bash \
 		--name ldap $(IMAGE):$(TAG)
 
@@ -26,10 +26,10 @@ mock:
 	@docker run -i -t --rm \
 		-p 389:389 \
 		-p 636:636 \
-		-v `pwd`/ssl/ca.pem:/etc/openldap/ssl/cacert.pem:ro \
-		-v `pwd`/ssl/ldap.pem:/etc/openldap/ssl/cert.pem:ro \
-		-v `pwd`/ssl/ldap.key:/etc/openldap/ssl/privkey.key:ro \
-		-v `pwd`/mock.ldif:/var/lib/openldap/openldap-data/backup.latest.ldif \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
+		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
+		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
 		--name ldap $(IMAGE):$(TAG)
 
 		#-e OPENLDAP_DEBUG_LEVEL='3'\

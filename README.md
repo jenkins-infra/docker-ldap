@@ -3,7 +3,7 @@ OpenLdap docker image used for Jenkins Infrastructure Project
 This project defines two docker images, one that run openldap and a second one that run a cron daemon who periodically backup the database
 
 ### Certificate
-This openldap container require valid SSL certificate located in /etc/openldap/ssl where each filename is one of the following variable.
+This openldap container require valid SSL certificate located in /etc/ldap/ssl where each filename is one of the following variable.
 
 * OPENLDAP_SSL_KEY
 * OPENLDAP_SSL_CRT
@@ -40,7 +40,7 @@ Default: 's3cr3t'
 ##### OPENLDAP_BACKUP_PATH
 Define openldap backup directory
 
-Default: '/var/lib/openldap/openldap-data'
+Default: '/backup'
 
 ##### OPENLDAP_BACKUP_FILE
 Define openldap backup file name.
@@ -70,19 +70,19 @@ Default: OPENLDAP_BACKUP_FILE
 
 ##### OPENLDAP_SSL_KEY
 Define ssl private key file name.
-This file must be located in /etc/openldap/ssl
+This file must be located in /etc/ldap/ssl
 
 Default: 'privkey.key'
 
 ##### OPENLDAP_SSL_CRT
 Define ssl certificate file name.
-This file must be located in /etc/openldap/ssl
+This file must be located in /etc/ldap/ssl
 
 Default: 'cert.pem'
 
 ##### OPENLDAP_SSL_CA
 Define ca certificate file name.
-This file must be located in /etc/openldap/ssl
+This file must be located in /etc/ldap/ssl
 
 Default: 'ca.pem'
 
