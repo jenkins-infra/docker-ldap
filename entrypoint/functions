@@ -13,7 +13,8 @@ function is_ssl_certs {
   if [ ! -f "/etc/ldap/ssl/$OPENLDAP_SSL_KEY" ]; then exit "File /etc/ldap/ssl/${OPENLDAP_SSL_KEY} doesn't exist" ;fi
   if [ ! -f "/etc/ldap/ssl/$OPENLDAP_SSL_CRT" ]; then exit "File /etc/ldap/ssl/${OPENLDAP_SSL_CRT} doesn't exist" ;fi
   if [ ! -f "/etc/ldap/ssl/$OPENLDAP_SSL_CA" ]; then exit "File /etc/ldap/ssl/${OPENLDAP_SSL_CA} doesn't exist" ;fi
-  openssl verify -CAfile "/etc/ldap/ssl/${OPENLDAP_SSL_CA}" "/etc/ldap/ssl/${OPENLDAP_SSL_CRT}"
+  certtool --verify --infile "/etc/ldap/ssl/${OPENLDAP_SSL_CRT}" --load-ca-certificate "/etc/ldap/ssl/${OPENLDAP_SSL_CA}"
+
 }
 
 # Configure /etc/slapd.conf based on env variable
