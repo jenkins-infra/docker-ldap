@@ -16,8 +16,8 @@ EXPOSE 389 636
 
 
 RUN \
-  addgroup --gid 101 ldap && \
-  useradd -d /var/lib/ldap/ -g ldap -m -u 101  ldap
+  addgroup --gid 101 openldap && \
+  useradd -d /var/lib/ldap/ -g openldap -m -u 101 openldap
 
 VOLUME /var/lib/ldap
 
@@ -60,8 +60,8 @@ COPY config/slapd.conf /etc/ldap/slapd.conf
 RUN \
   mkdir /etc/ldap/ssl && \
   chmod 700 /var/lib/ldap && \
-  chown -R root:ldap /etc/ldap && \
-  chown ldap:ldap /var/lib/ldap && \
-  chown ldap:ldap /var/run/slapd
+  chown -R root:openldap /etc/ldap && \
+  chown openldap:openldap /var/lib/ldap && \
+  chown openldap:openldap /var/run/slapd
 
 ENTRYPOINT [ "/sbin/tini","--","/entrypoint/start" ]

@@ -52,13 +52,13 @@ function configure_slapd() {
   # Convert config file to config dir even if database doesn't exist.
   slaptest -f /etc/ldap/slapd.conf -F /etc/ldap/slapd.d/ | true
 
-  chown -R ldap:ldap /etc/ldap/slapd.d /var/lib/slapd
+  chown -R openldap:openldap /etc/ldap/slapd.d /var/lib/ldap
   chmod 0750 -R /etc/ldap/slapd.d
 }
 
 function start_slapd() {
   echo "Start slapd"
-  exec /usr/sbin/slapd -h "ldap:/// ldaps:///" -u ldap -g ldap -d"${OPENLDAP_DEBUG_LEVEL}" -F /etc/ldap/slapd.d
+  exec /usr/sbin/slapd -h "ldap:/// ldaps:///" -u openldap -g openldap -d"${OPENLDAP_DEBUG_LEVEL}" -F /etc/ldap/slapd.d
 }
 
 function backup(){
