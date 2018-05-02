@@ -40,7 +40,7 @@ Default: 's3cr3t'
 ##### OPENLDAP_BACKUP_PATH
 Define openldap backup directory
 
-Default: '/backup'
+Default: '/var/backups'
 
 ##### OPENLDAP_BACKUP_FILE
 Define openldap backup file name.

@@ -4,7 +4,7 @@ ENV OPENLDAP_CONFIG_ADMIN_DN 'cn=admin,cn=config'
 ENV OPENLDAP_CONFIG_ADMIN_PASSWORD config
 ENV OPENLDAP_ADMIN_DN 'cn=admin,dc=jenkins-ci,dc=org'
 ENV OPENLDAP_ADMIN_PASSWORD 's3cr3t'
-ENV OPENLDAP_BACKUP_PATH /backup
+ENV OPENLDAP_BACKUP_PATH /var/backups
 ENV OPENLDAP_BACKUP_FILE 'backup.latest.ldif'
 ENV OPENLDAP_DATABASE 'dc=jenkins-ci,dc=org'
 ENV OPENLDAP_DEBUG_LEVEL 256
@@ -41,7 +41,7 @@ RUN \
 RUN \
   apt-get -y update && \
   LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    procps
+    procps \
     ca-cacert \
     slapd \
     ldap-utils \
