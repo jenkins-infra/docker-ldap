@@ -6,14 +6,15 @@ ENV OPENLDAP_ENDPOINT ldap.jenkins.io
 
 RUN \
   apt-get -y update && \
-  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    curl && \
+  apt-get install -y\
+    curl \
+    cron && \
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Backup entrypoint needs to be run as root as it also configure slapd.conf.
 # This behaviour must be changed to be run as ldap user but it requires more testing.
 
-COPY crontabs/ldap /etc/crontabs/root
+COPY crontabs/ldap /etc/cron.d/root
 
-ENTRYPOINT [ "/sbin/tini","--", "crond","-f","-d","8" ]
+ENTRYPOINT [ "/sbin/tini","--", "cron","-f", "-L", "8" ]
