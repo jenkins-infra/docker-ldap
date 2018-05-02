@@ -50,6 +50,7 @@ function configure_slapd() {
   # It's more convenient to update slapd.conf and then convert it to the ldiff format
   # than editing slapd.d files.
   # Convert config file to config dir even if database doesn't exist.
+  rm -Rf /etc/ldap/slapd.d && mkdir /etc/ldap/slapd.d
   slaptest -f /etc/ldap/slapd.conf -F /etc/ldap/slapd.d/ | true
 
   chown -R openldap:openldap /etc/ldap/slapd.d /var/lib/ldap
