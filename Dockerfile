@@ -1,10 +1,10 @@
-FROM alpine:3.7
+FROM debian:9
 
 ENV OPENLDAP_CONFIG_ADMIN_DN 'cn=admin,cn=config'
 ENV OPENLDAP_CONFIG_ADMIN_PASSWORD config
 ENV OPENLDAP_ADMIN_DN 'cn=admin,dc=jenkins-ci,dc=org'
 ENV OPENLDAP_ADMIN_PASSWORD 's3cr3t'
-ENV OPENLDAP_BACKUP_PATH /var/lib/openldap/openldap-data
+ENV OPENLDAP_BACKUP_PATH /backup
 ENV OPENLDAP_BACKUP_FILE 'backup.latest.ldif'
 ENV OPENLDAP_DATABASE 'dc=jenkins-ci,dc=org'
 ENV OPENLDAP_DEBUG_LEVEL 256
@@ -14,11 +14,12 @@ ENV OPENLDAP_SSL_CA 'cacert.pem'
 
 EXPOSE 389 636
 
-VOLUME /var/lib/openldap/openldap-data
 
 RUN \
-  addgroup -g 101 ldap && \
-  adduser -H -D -u 100 -h /var/lib/openldap/ -G ldap ldap
+  addgroup --gid 101 ldap && \
+  useradd -d /var/lib/ldap/ -g ldap -m -u 101  ldap
+
+VOLUME /var/lib/ldap
 
 RUN mkdir /entrypoint
 
@@ -28,30 +29,38 @@ COPY entrypoint/healthcheck.sh /entrypoint/healthcheck
 COPY entrypoint/restore.sh /entrypoint/restore
 COPY entrypoint/functions /entrypoint/functions
 
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /sbin/tini
+
 RUN \
   chmod 0755 /entrypoint/start && \
   chmod 0755 /entrypoint/backup && \
   chmod 0755 /entrypoint/healthcheck && \
-  chmod 0755 /entrypoint/restore
+  chmod 0755 /entrypoint/restore && \
+  chmod 0755 /sbin/tini
 
 RUN \
-  apk add --no-cache \
-  bash \
-  lmdb-tools \
-  openldap-back-mdb \
-  openldap-clients \
-  openldap \
-  openssl \
-  tini
+  apt-get -y update && \
+  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-cacert \
+    slapd \
+    ldap-utils \
+    libsasl2-modules \
+    libsasl2-modules-db \
+    libsasl2-modules-gssapi-mit \
+    libsasl2-modules-ldap \
+    libsasl2-modules-otp \
+    libsasl2-modules-sql \
+    openssl && \
+  apt-get clean &&\
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY config/slapd.conf /etc/openldap/slapd.conf
+COPY config/slapd.conf /etc/ldap/slapd.conf
 
 RUN \
-  mkdir /etc/openldap/ssl && \
-  mkdir /var/run/openldap/ && \
-  chmod 700 /var/lib/openldap/openldap-data && \
-  chown -R root:ldap /etc/openldap && \
-  chown ldap:ldap /var/lib/openldap/openldap-data && \
-  chown ldap:ldap /var/run/openldap
+  mkdir /etc/ldap/ssl && \
+  chmod 700 /var/lib/ldap && \
+  chown -R root:ldap /etc/ldap && \
+  chown ldap:ldap /var/lib/ldap && \
+  chown ldap:ldap /var/run/slapd
 
 ENTRYPOINT [ "/sbin/tini","--","/entrypoint/start" ]
