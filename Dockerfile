@@ -43,6 +43,7 @@ RUN \
   LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y \
     procps \
     ca-cacert \
+    gnutls-bin \
     slapd \
     ldap-utils \
     libsasl2-modules \
