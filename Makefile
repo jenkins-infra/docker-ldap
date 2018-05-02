@@ -11,6 +11,17 @@ publish:
 	docker push $(IMAGE):$(TAG)
 	docker push $(IMAGE):cron-$(TAG)
 
+cron-shell:
+	@docker run -i -t --rm \
+		-p 389:389 \
+		-p 636:636 \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
+		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
+		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
+		--entrypoint /bin/bash \
+		--name shell-cron $(IMAGE):cron-$(TAG)
+
 shell:
 	@docker run -i -t --rm \
 		-p 389:389 \
@@ -21,6 +32,15 @@ shell:
 		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
 		--entrypoint /bin/bash \
 		--name ldap $(IMAGE):$(TAG)
+cron-mock:
+	@docker run -i -t --rm \
+		-p 389:389 \
+		-p 636:636 \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
+		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
+		-v `pwd`/mock.ldif:/backup/backup.latest.ldif \
+		--name cron-ldap $(IMAGE):cron-$(TAG)
 
 mock:
 	@docker run -i -t --rm \

@@ -40,7 +40,8 @@ RUN \
 
 RUN \
   apt-get -y update && \
-  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    procps
     ca-cacert \
     slapd \
     ldap-utils \
