@@ -75,3 +75,7 @@ function backup(){
   echo "Backup ${OPENLDAP_BACKUP_PATH}/${timestamp}.${OPENLDAP_BACKUP_FILE}.gz created"
   echo "Backup ${OPENLDAP_BACKUP_PATH}/${OPENLDAP_BACKUP_FILE}.gz created"
 }
+
+function clean_backup() {
+    find "${OPENLDAP_BACKUP_PATH}/" -mtime +60 -delete
+}
