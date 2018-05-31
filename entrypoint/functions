@@ -77,5 +77,6 @@ function backup(){
 }
 
 function clean_backup() {
-    find "${OPENLDAP_BACKUP_PATH}/" -mtime +60 -delete
+    # Clean all files (not directory), not modified since 60 days
+    find "${OPENLDAP_BACKUP_PATH}/" -mtime +60 ! \( -type d \) -delete
 }

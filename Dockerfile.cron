@@ -15,6 +15,6 @@ RUN \
 # Backup entrypoint needs to be run as root as it also configure slapd.conf.
 # This behaviour must be changed to be run as ldap user but it requires more testing.
 
-COPY crontabs/ldap /etc/cron.d/root
+COPY crontabs/ldap /etc/cron.d/ldap
 
 ENTRYPOINT [ "/sbin/tini","--", "cron","-f", "-L", "8" ]
