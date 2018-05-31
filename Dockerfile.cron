@@ -4,6 +4,8 @@ FROM $BASE_IMAGE
 
 ENV OPENLDAP_ENDPOINT ldap.jenkins.io
 
+COPY entrypoint/cron /entrypoint/cron
+
 RUN \
   apt-get -y update && \
   apt-get install -y\
@@ -17,4 +19,8 @@ RUN \
 
 COPY crontabs/ldap /etc/cron.d/ldap
 
-ENTRYPOINT [ "/sbin/tini","--", "cron","-f", "-L", "8" ]
+RUN \
+  chmod 0755 /entrypoint/cron && \
+  chmod 0644 /etc/cron.d/ldap
+
+ENTRYPOINT [ "/sbin/tini","--","/entrypoint/cron" ]
