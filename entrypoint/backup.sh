@@ -9,4 +9,4 @@ source /entrypoint/functions
 
 is_ssl_certs
 configure_slapd
-backup
+backup && clean_backup
