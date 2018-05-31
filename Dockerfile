@@ -61,7 +61,6 @@ COPY config/slapd.conf /etc/ldap/slapd.conf
 RUN \
   mkdir /etc/ldap/ssl && \
   chmod 700 /var/lib/ldap && \
-  chown -R root:openldap /etc/ldap && \
   chown openldap:openldap /var/lib/ldap && \
   chown openldap:openldap /var/run/slapd
 
