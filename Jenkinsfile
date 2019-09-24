@@ -7,7 +7,7 @@ properties([
     pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/15 * * * *"]]),
 ])
 
-node('docker') {
+node('docker&&linux') {
     checkout scm
     def containerBase
     def containerCron
