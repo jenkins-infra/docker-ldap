@@ -1,1 +1,3 @@
 ssl*
+*.csv
+utils/bin/
