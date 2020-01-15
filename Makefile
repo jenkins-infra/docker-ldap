@@ -1,4 +1,4 @@
-.PHONY: build run shell
+.PHONY: build run shell mock
 
 IMAGE = 'jenkinsciinfra/ldap'
 TAG = $(shell git rev-parse HEAD | cut -c1-6)
