@@ -23,8 +23,10 @@ echo:
 	echo $(IMAGE):$(TAG) $(IMAGE):$(BRANCH)
 
 publish:
-	docker push $(IMAGE):$(TAG) $(IMAGE):latest
-	docker push $(IMAGE):cron-$(TAG) $(IMAGE):cron-latest
+	docker push $(IMAGE):$(TAG)
+	docker push $(IMAGE):latest
+	docker push $(IMAGE):cron-$(TAG)
+	docker push $(IMAGE):cron-latest
 
 cron-shell:
 	@docker run -i -t --rm \
