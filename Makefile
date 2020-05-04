@@ -1,7 +1,6 @@
 .PHONY: build run shell mock
 
 COMMIT=$(shell git rev-parse HEAD | cut -c1-6)
-BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 IMAGE = jenkinsciinfra/ldap
 TAG = $(COMMIT)
@@ -10,19 +9,22 @@ build:
 	docker build \
 		--no-cache \
 		-t $(IMAGE):$(TAG) \
-		-t $(IMAGE):$(BRANCH) \
+		-t $(IMAGE):latest \
 		.
 	docker build \
 		--build-arg \
 			BASE_IMAGE=$(IMAGE):$(TAG) \
 		-t $(IMAGE):cron-$(TAG) \
-		-t $(IMAGE):cron-$(BRANCH) \
+		-t $(IMAGE):cron-latest \
 		-f Dockerfile.cron \
 		.
 
+echo:
+	echo $(IMAGE):$(TAG) $(IMAGE):$(BRANCH)
+
 publish:
-	docker push $(IMAGE):$(TAG) $(IMAGE):$(BRANCH)
-	docker push $(IMAGE):cron-$(TAG) $(IMAGE):cron-$(BRANCH)
+	docker push $(IMAGE):$(TAG) $(IMAGE):latest
+	docker push $(IMAGE):cron-$(TAG) $(IMAGE):cron-latest
 
 cron-shell:
 	@docker run -i -t --rm \
