@@ -1,39 +1,36 @@
-#!/usr/bin/env groovy
+pipeline {
+  agent {
+    label 'docker&&linux'
+  }
 
-def imageName = 'jenkinsciinfra/ldap'
+  options {
+    buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')
+    timeout(time: 1, unit: 'HOURS')
+    timestamps()
+  }
 
-properties([
-    buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5')),
-    pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/15 * * * *"]]),
-])
+  triggers {
+    pollSCM('H/15 * * * *')
+  }
 
-node('docker&&linux') {
-    checkout scm
-    def containerBase
-    def containerCron
-    stage('Prepare Container') {
-        timestamps {
-            sh 'git rev-parse HEAD > GIT_COMMIT'
-            shortCommit = readFile('GIT_COMMIT').take(6)
-            def imageTag = "${env.BUILD_ID}-build${shortCommit}"
-            env.BASE_IMAGE = "${imageName}:${imageTag}"
-            env.CRON_IMAGE = "${imageName}:cron-${imageTag}"
-            echo "Creating the container ${env.BASE_IMAGE}"
-            containerBase = docker.build("${env.BASE_IMAGE}")
-            containerCron = docker.build("${env.CRON_IMAGE}", "--build-arg BASE_IMAGE=${env.BASE_IMAGE} -f Dockerfile.cron .")
-        }
+  stages {
+    stage('Build') {
+      steps {
+          sh 'make build'
+      }
     }
-
-    /* Assuming we're not inside of a pull request or multibranch pipeline */
-    if (!(env.CHANGE_ID || env.BRANCH_NAME)) {
-        stage('Publish container') {
-            infra.withDockerCredentials {
-                timestamps {
-                  containerBase.push()
-                  containerCron.push()
-                }
-            }
+    stage('Publish'){
+      when {
+        environment name: 'JENKINS_URL', value: 'https://trusted.ci.jenkins.io:1443/'
+      }
+      steps {
+        script {
+          infra.withDockerCredentials {
+            sh 'make publish'
+          }
         }
+      }
     }
+  }
 }
 
