@@ -1,15 +1,28 @@
 .PHONY: build run shell mock
 
-IMAGE = 'jenkinsciinfra/ldap'
-TAG = $(shell git rev-parse HEAD | cut -c1-6)
+COMMIT=$(shell git rev-parse HEAD | cut -c1-6)
+BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+
+IMAGE = jenkinsciinfra/ldap
+TAG = $(COMMIT)
 
 build:
-	docker build --no-cache -t $(IMAGE):$(TAG) .
-	docker build --build-arg BASE_IMAGE=$(IMAGE):$(TAG) -t $(IMAGE):cron-$(TAG) -f Dockerfile.cron .
+	docker build \
+		--no-cache \
+		-t $(IMAGE):$(TAG) \
+		-t $(IMAGE):$(BRANCH) \
+		.
+	docker build \
+		--build-arg \
+			BASE_IMAGE=$(IMAGE):$(TAG) \
+		-t $(IMAGE):cron-$(TAG) \
+		-t $(IMAGE):cron-$(BRANCH) \
+		-f Dockerfile.cron \
+		.
 
 publish:
-	docker push $(IMAGE):$(TAG)
-	docker push $(IMAGE):cron-$(TAG)
+	docker push $(IMAGE):$(TAG) $(IMAGE):$(BRANCH)
+	docker push $(IMAGE):cron-$(TAG) $(IMAGE):cron-$(BRANCH)
 
 cron-shell:
 	@docker run -i -t --rm \
