@@ -57,6 +57,7 @@ RUN \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY config/slapd.conf /etc/ldap/slapd.conf
+COPY acme/ca.crt /etc/ldap/ssl-ca/ca.crt
 
 RUN \
   mkdir /etc/ldap/ssl && \
