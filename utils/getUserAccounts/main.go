@@ -159,12 +159,22 @@ func resetUserPassword() {
 }
 
 func restoreUsers() {
-	user := "olblak10"
-	firstName := "Olblak"
-	lastName := "Kalblo"
-	email := "olblak-test-10@olblak.com"
+	users := getJiraUsers()
 
-	restoreUser(user, firstName, lastName, email)
+	for _, user := range users {
+		fmt.Printf("User %s-%s-%s-%s will be re-recreated based on Jira Information\n",
+			user.UserName,
+			user.FirstName,
+			user.LastName,
+			user.Email)
+
+		restoreUser(
+			user.UserName,
+			user.FirstName,
+			user.LastName,
+			user.Email)
+	}
+
 }
 
 func restoreUser(user, firstName, lastName, email string) {
@@ -272,7 +282,7 @@ func getArtifactoryMaintainers() ([]string, error) {
 	return u, nil
 }
 
-func getJiraUsers() {
+func getJiraUsers() (jiraUsers []User) {
 	// getJiraUsers() return the list of user from issues.jenkins-ci.org and compare it to LDAP database
 
 	existCounter := 0
@@ -298,6 +308,7 @@ func getJiraUsers() {
 
 			if user.UserName == entry.GetAttributeValue("cn") {
 				exist = true
+				break
 			}
 		}
 		if exist {
@@ -306,6 +317,8 @@ func getJiraUsers() {
 				fmt.Printf("Maintainer %s found in database\n", user)
 			}
 		} else {
+			jiraUsers = append(jiraUsers, user)
+
 			notExistCounter++
 			if showIfMaintainerNotRecordedInLdap == true {
 				fmt.Printf("Maintainer %s not found in database\n", user)
@@ -316,6 +329,8 @@ func getJiraUsers() {
 
 	fmt.Printf("%d Jira account already exist in ldap\n", existCounter)
 	fmt.Printf("Based on Jira %d account need to be recreated in DB\n", notExistCounter)
+
+	return jiraUsers
 }
 
 func getMaintainers() {
@@ -338,6 +353,7 @@ func getMaintainers() {
 
 			if user == entry.GetAttributeValue("cn") {
 				exist = true
+				break
 			}
 		}
 		if exist {
