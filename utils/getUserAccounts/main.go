@@ -57,9 +57,9 @@ var (
 
 	resetUserPasswordCmd = &cobra.Command{
 		Use:   "resetPassword",
-		Short: "Reset a user password",
+		Short: "Reset every user password",
 		Run: func(cmd *cobra.Command, args []string) {
-			resetUserPassword()
+			resetUsersPassword()
 		},
 	}
 	restoreUsersCmd = &cobra.Command{
@@ -117,11 +117,24 @@ func (u *User) ShowLDIF() {
 	fmt.Printf("\n")
 }
 
-func resetUserPassword() {
-	URL := "https://accounts.jenkins.io/admin/passwordReset/"
+func resetUsersPassword() {
 
-	user := "olblak2"
-	reason := "https://groups.google.com/forum/#!topic/jenkinsci-dev/3UvrCTflXGk"
+	reason := "Because of the recent outage that happened on the Jenkins LDAP database, we decided to reset every password, more information here https://groups.google.com/forum/#!topic/jenkinsci-dev/3UvrCTflXGk"
+
+	sr, err := getLdapUsers()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range sr.Entries {
+		user := entry.GetAttributeValue("cn")
+		resetUserPassword(user, reason)
+	}
+
+}
+
+func resetUserPassword(user, reason string) {
+	URL := "https://accounts.jenkins.io/admin/passwordReset/"
 
 	data := fmt.Sprintf("id=%s&reason=%s", user, reason)
 
@@ -283,7 +296,7 @@ func getArtifactoryMaintainers() ([]string, error) {
 }
 
 func getJiraUsers() (jiraUsers []User) {
-	// getJiraUsers() return the list of user from issues.jenkins-ci.org and compare it to LDAP database
+	// getJiraUsers() return the list of users from issues.jenkins-ci.org then compare it to LDAP database
 
 	existCounter := 0
 	notExistCounter := 0
