@@ -130,7 +130,6 @@ func resetUsersPassword() {
 		user := entry.GetAttributeValue("cn")
 		resetUserPassword(user, reason)
 	}
-
 }
 
 func resetUserPassword(user, reason string) {
@@ -191,10 +190,10 @@ func restoreUsers() {
 }
 
 func restoreUser(user, firstName, lastName, email string) {
-	URL := "https://accounts.jenkins.io/admin/signup"
+	URL := "https://accounts.jenkins.io/admin/doSignup"
 
 	data := url.Values{}
-	data.Set("userId", user)
+	data.Set("userid", user)
 	data.Add("firstName", firstName)
 	data.Add("lastName", lastName)
 	data.Add("email", email)
@@ -226,6 +225,7 @@ func restoreUser(user, firstName, lastName, email string) {
 
 	if res.StatusCode == 200 {
 		fmt.Printf("%s user created\n", user)
+		fmt.Printf("%s\n", string(body))
 	} else {
 		fmt.Printf("Something went wrong while creating user %s\n\n", user)
 		fmt.Printf("%s\n", string(body))
