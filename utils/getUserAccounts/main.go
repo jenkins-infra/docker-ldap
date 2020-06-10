@@ -52,18 +52,16 @@ var (
 		},
 	}
 
-	bindUsername        string
-	bindPassword        string
-	jiraUsername        string
-	jiraPassword        string
-	url                 string
-	port                int
-	protocol            string
-	groupBaseDN         string
-	newAccounts         [][]string = [][]string{{"cn", "mail", "creation_date", "github"}}
-	newAccountsFilePath string
-	memberOfGroup       string
-	userBaseDN          string
+	bindUsername  string
+	bindPassword  string
+	jiraUsername  string
+	jiraPassword  string
+	url           string
+	port          int
+	protocol      string
+	groupBaseDN   string
+	memberOfGroup string
+	userBaseDN    string
 
 	jiraBackupFile string
 
@@ -116,7 +114,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&groupBaseDN, "groupBaseDN", "ou=groups,dc=jenkins-ci,dc=org", "Define group search base dn")
 	rootCmd.PersistentFlags().StringVar(&userBaseDN, "userBaseDN", "ou=people,dc=jenkins-ci,dc=org", "Define user search base dn")
 	rootCmd.PersistentFlags().StringVar(&memberOfGroup, "memberOfGroup", "all", "Define required group membership")
-	rootCmd.PersistentFlags().StringVar(&newAccountsFilePath, "file-new", "accounts.new.csv", "Define the csv file where new jenkins accounts are exported")
 
 	rootCmd.PersistentFlags().BoolVar(&showIfMaintainerRecordedInLdap, "show-exist", false, "Display artifactory maintainers that exist in Ldap database")
 	rootCmd.PersistentFlags().BoolVar(&showIfMaintainerNotRecordedInLdap, "show-not-exist", false, "Display artifactory maintainers that don't exist in Ldap database")
