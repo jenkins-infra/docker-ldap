@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"bytes"
+	"strings"
 
 	"encoding/csv"
 	"encoding/json"
@@ -52,16 +53,26 @@ var (
 		},
 	}
 
-	bindUsername  string
-	bindPassword  string
-	jiraUsername  string
-	jiraPassword  string
-	url           string
-	port          int
-	protocol      string
-	groupBaseDN   string
-	memberOfGroup string
-	userBaseDN    string
+	resetUserPasswordCmd = &cobra.Command{
+		Use:   "resetPassword",
+		Short: "Reset a user password",
+		Run: func(cmd *cobra.Command, args []string) {
+			resetUserPassword()
+		},
+	}
+
+	bindUsername       string
+	bindPassword       string
+	jiraUsername       string
+	jiraPassword       string
+	accountAppUsername string
+	accountAppPassword string
+	ldapURL            string
+	port               int
+	protocol           string
+	groupBaseDN        string
+	memberOfGroup      string
+	userBaseDN         string
 
 	jiraBackupFile string
 
@@ -97,20 +108,64 @@ func (u *User) ShowLDIF() {
 	fmt.Printf("\n")
 }
 
+func resetUserPassword() {
+	URL := "https://accounts.jenkins.io/admin/passwordReset/"
+
+	user := "olblak2"
+	reason := "https://groups.google.com/forum/#!topic/jenkinsci-dev/3UvrCTflXGk"
+
+	data := fmt.Sprintf("id=%s&reason=%s", user, reason)
+
+	req, err := http.NewRequest("POST", URL, strings.NewReader(data))
+
+	req.SetBasicAuth(accountAppUsername, accountAppPassword)
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if res.StatusCode == 200 {
+		fmt.Printf("%s password reset\n", user)
+	} else {
+		fmt.Printf("Something went wrong while reseting %s password\n\n", user)
+		fmt.Printf("%s\n", string(body))
+	}
+
+}
+
 func init() {
 
 	rootCmd.AddCommand(
 		maintainerCmd,
 		jiraCmd,
+		resetUserPasswordCmd,
 	)
 
 	rootCmd.PersistentFlags().StringVar(&bindUsername, "username", "cn=admin,dc=jenkins-ci,dc=org", "Define ldap bind username")
 	rootCmd.PersistentFlags().StringVar(&bindPassword, "password", "", "Define ldap bind password")
-	rootCmd.PersistentFlags().StringVar(&jiraUsername, "jiraUsername", "", "Define jira bind username")
+	rootCmd.PersistentFlags().StringVar(&jiraUsername, "jiraUsername", "", "Define jira username")
 	rootCmd.PersistentFlags().StringVar(&jiraPassword, "jiraPassword", "", "Define jira password")
-	rootCmd.PersistentFlags().StringVar(&url, "url", "localhost", "Define ldap url")
+	rootCmd.PersistentFlags().StringVar(&accountAppUsername, "accountAppUsername", "", "Define accountApp username")
+	rootCmd.PersistentFlags().StringVar(&accountAppPassword, "accountAppPassword", "", "Define accountApp password")
+	rootCmd.PersistentFlags().StringVar(&ldapURL, "url", "localhost", "Define ldap url")
 	rootCmd.PersistentFlags().StringVar(&protocol, "protocol", "ldaps", "Define ldap protocol [ldap, ldaps]")
-	rootCmd.PersistentFlags().IntVar(&port, "port", 389, "Define ldap url")
+	rootCmd.PersistentFlags().IntVar(&port, "port", 389, "Define ldap port")
 	rootCmd.PersistentFlags().StringVar(&groupBaseDN, "groupBaseDN", "ou=groups,dc=jenkins-ci,dc=org", "Define group search base dn")
 	rootCmd.PersistentFlags().StringVar(&userBaseDN, "userBaseDN", "ou=people,dc=jenkins-ci,dc=org", "Define user search base dn")
 	rootCmd.PersistentFlags().StringVar(&memberOfGroup, "memberOfGroup", "all", "Define required group membership")
@@ -367,7 +422,7 @@ func showJiraUserInfo(user string) error {
 
 func getLdapUsers() (sr *ldap.SearchResult, err error) {
 
-	l, err := ldap.DialURL(fmt.Sprintf("%v://%s:%d", protocol, url, port))
+	l, err := ldap.DialURL(fmt.Sprintf("%v://%s:%d", protocol, ldapURL, port))
 
 	if err != nil {
 		return sr, err
