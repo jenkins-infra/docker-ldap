@@ -13,6 +13,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"net/url"
+
 	"time"
 
 	"github.com/spf13/cobra"
@@ -58,6 +60,13 @@ var (
 		Short: "Reset a user password",
 		Run: func(cmd *cobra.Command, args []string) {
 			resetUserPassword()
+		},
+	}
+	restoreUsersCmd = &cobra.Command{
+		Use:   "restoreUsers",
+		Short: "Restore users from jira",
+		Run: func(cmd *cobra.Command, args []string) {
+			restoreUsers()
 		},
 	}
 
@@ -149,12 +158,65 @@ func resetUserPassword() {
 
 }
 
+func restoreUsers() {
+	user := "olblak10"
+	firstName := "Olblak"
+	lastName := "Kalblo"
+	email := "olblak-test-10@olblak.com"
+
+	restoreUser(user, firstName, lastName, email)
+}
+
+func restoreUser(user, firstName, lastName, email string) {
+	URL := "https://accounts.jenkins.io/admin/signup"
+
+	data := url.Values{}
+	data.Set("userId", user)
+	data.Add("firstName", firstName)
+	data.Add("lastName", lastName)
+	data.Add("email", email)
+
+	//req, err := http.NewRequest("POST", URL, strings.NewReader(data))
+	req, err := http.NewRequest("POST", URL, strings.NewReader(data.Encode()))
+
+	req.SetBasicAuth(accountAppUsername, accountAppPassword)
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if res.StatusCode == 200 {
+		fmt.Printf("%s user created\n", user)
+	} else {
+		fmt.Printf("Something went wrong while creating user %s\n\n", user)
+		fmt.Printf("%s\n", string(body))
+	}
+
+}
+
 func init() {
 
 	rootCmd.AddCommand(
 		maintainerCmd,
 		jiraCmd,
 		resetUserPasswordCmd,
+		restoreUsersCmd,
 	)
 
 	rootCmd.PersistentFlags().StringVar(&bindUsername, "username", "cn=admin,dc=jenkins-ci,dc=org", "Define ldap bind username")
@@ -173,7 +235,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&showIfMaintainerRecordedInLdap, "show-exist", false, "Display artifactory maintainers that exist in Ldap database")
 	rootCmd.PersistentFlags().BoolVar(&showIfMaintainerNotRecordedInLdap, "show-not-exist", false, "Display artifactory maintainers that don't exist in Ldap database")
 
-	jiraCmd.Flags().StringVar(&jiraBackupFile, "backup-file", "", "Read Jira backup file using csv with following fields <user_name,first_name,last_name,display_name,email_address,created_date,updated_date>")
+	rootCmd.PersistentFlags().StringVar(&jiraBackupFile, "backup-file", "", "Read Jira backup file using csv with following fields <user_name,first_name,last_name,display_name,email_address,created_date,updated_date>")
 
 	rootCmd.MarkFlagRequired("password")
 }
