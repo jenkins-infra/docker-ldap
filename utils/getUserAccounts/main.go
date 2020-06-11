@@ -524,6 +524,14 @@ func getJiraUsersFromFile() ([]User, error) {
 
 		date, err := time.Parse(jiraDateLayout, u.CreationDate)
 
+		if len(strings.TrimSpace(u.FirstName)) == 0 {
+			u.FirstName = "John"
+		}
+
+		if len(strings.TrimSpace(u.LastName)) == 0 {
+			u.FirstName = "Doe"
+		}
+
 		if err != nil && u.CreationDate != "" {
 			log.Print(err)
 			return nil, err
