@@ -132,7 +132,7 @@ func resetUsersPassword() {
 
 	waitGroup.Add(len(sr.Entries))
 
-	guard := make(chan struct{}, 100)
+	guard := make(chan struct{}, 50)
 
 	for index := range sr.Entries {
 
@@ -206,7 +206,7 @@ func restoreUsers() {
 
 	waitGroup.Add(len(users))
 
-	guard := make(chan struct{}, 100)
+	guard := make(chan struct{}, 50)
 
 	for index := range users {
 
