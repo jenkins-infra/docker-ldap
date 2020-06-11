@@ -192,11 +192,15 @@ func restoreUsers() {
 func restoreUser(user, firstName, lastName, email string) {
 	URL := "https://accounts.jenkins.io/admin/doSignup"
 
+	message := "Because of the recent outage that happened on the Jenkins LDAP database, we decided to recreate Jenkins user account based on information we have from issues.jenkins-ci.org. More information here https://groups.google.com/forum/#!topic/jenkinsci-dev/3UvrCTflXGk"
+
 	data := url.Values{}
 	data.Set("userid", user)
 	data.Add("firstName", firstName)
 	data.Add("lastName", lastName)
 	data.Add("email", email)
+	data.Add("skipPassword", true)
+	data.Add("message", message)
 
 	//req, err := http.NewRequest("POST", URL, strings.NewReader(data))
 	req, err := http.NewRequest("POST", URL, strings.NewReader(data.Encode()))
