@@ -85,7 +85,8 @@ var (
 	memberOfGroup      string
 	userBaseDN         string
 
-	jiraBackupFile string
+	jiraBackupFile     string
+	sendgridBackupFile string
 
 	//maintainerCmd Option
 	showIfMaintainerRecordedInLdap    bool
@@ -119,14 +120,33 @@ func (u *User) ShowLDIF() {
 	fmt.Printf("\n")
 }
 
+func contain(item string, items []string) bool {
+	for _, i := range items {
+		if item == i {
+			return true
+		}
+	}
+	return false
+}
+
 func resetUsersPassword() {
 
 	reason := "Because of the recent outage that happened on the Jenkins LDAP database, we decided to reset every password, more information here https://groups.google.com/forum/#!topic/jenkinsci-dev/3UvrCTflXGk"
+
+	skippedCounter := 0
+	passwordResetCounter := 0
 
 	sr, err := getLdapUsers()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	sentEmails, err := getSendgridActivityEmailFromFile()
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Printf("%d email already sent\n\n", len(sentEmails))
 
 	waitGroup := sync.WaitGroup{}
 
@@ -135,6 +155,16 @@ func resetUsersPassword() {
 	guard := make(chan struct{}, 50)
 
 	for index := range sr.Entries {
+		fmt.Printf("%d/%d\n", index, len(sr.Entries))
+
+		mail := sr.Entries[index].GetAttributeValue("mail")
+
+		if contain(mail, sentEmails) {
+			fmt.Printf("Email already sent to %s, skipping \n", mail)
+			skippedCounter++
+			waitGroup.Done()
+			continue
+		}
 
 		guard <- struct{}{}
 
@@ -150,15 +180,18 @@ func resetUsersPassword() {
 			user := e.GetAttributeValue("cn")
 
 			resetUserPassword(user, reason)
+			passwordResetCounter++
 
 		}(sr.Entries[index])
 	}
 
 	waitGroup.Wait()
+	fmt.Printf("%d account were skipped because reset query already sent today\n", skippedCounter)
+	fmt.Printf("%d account were reset during this batch\n", passwordResetCounter)
 }
 
 func showResetUserPassword(user, reason string) {
-	fmt.Printf("%s need to be recreated", user)
+	fmt.Printf("%s password will be reset\n", user)
 }
 
 func resetUserPassword(user, reason string) {
@@ -321,6 +354,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&showIfMaintainerNotRecordedInLdap, "show-not-exist", false, "Display artifactory maintainers that don't exist in Ldap database")
 
 	rootCmd.PersistentFlags().StringVar(&jiraBackupFile, "backup-file", "", "Read Jira backup file using csv with following fields <user_name,first_name,last_name,display_name,email_address,created_date,updated_date>")
+	rootCmd.PersistentFlags().StringVar(&sendgridBackupFile, "sengrid-activity-file", "", "Read Sengrid Activity csv")
 
 	rootCmd.MarkFlagRequired("password")
 }
@@ -482,6 +516,30 @@ func getMaintainers() {
 			}
 		}
 	}
+}
+
+func getSendgridActivityEmailFromFile() ([]string, error) {
+
+	emails := []string{}
+
+	data, err := ioutil.ReadFile(sendgridBackupFile)
+	raw := csv.NewReader(bytes.NewReader(data))
+
+	records, err := raw.ReadAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, record := range records {
+		// record[8] is field email
+		if len(record[8]) > 0 {
+			emails = append(emails, record[8])
+		}
+	}
+
+	return emails, nil
+
 }
 
 func getJiraUsersFromFile() ([]User, error) {
