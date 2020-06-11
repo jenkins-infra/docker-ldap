@@ -199,7 +199,7 @@ func restoreUser(user, firstName, lastName, email string) {
 	data.Add("firstName", firstName)
 	data.Add("lastName", lastName)
 	data.Add("email", email)
-	data.Add("skipPassword", true)
+	data.Add("skipPassword", "true")
 	data.Add("message", message)
 
 	//req, err := http.NewRequest("POST", URL, strings.NewReader(data))
