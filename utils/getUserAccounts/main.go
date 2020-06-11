@@ -15,6 +15,8 @@ import (
 
 	"net/url"
 
+	"sync"
+
 	"time"
 
 	"github.com/spf13/cobra"
@@ -126,10 +128,37 @@ func resetUsersPassword() {
 		log.Fatal(err)
 	}
 
-	for _, entry := range sr.Entries {
-		user := entry.GetAttributeValue("cn")
-		resetUserPassword(user, reason)
+	waitGroup := sync.WaitGroup{}
+
+	waitGroup.Add(len(sr.Entries))
+
+	guard := make(chan struct{}, 100)
+
+	for index := range sr.Entries {
+
+		guard <- struct{}{}
+
+		go func(e *ldap.Entry) {
+			// when this goroutine finished, make sure to :
+			// - mark the waitGroup for this goroutine as finished; and
+			// - release the guard, so the next goroutine can be run.
+			defer func() {
+				waitGroup.Done()
+				<-guard
+			}()
+
+			user := e.GetAttributeValue("cn")
+
+			resetUserPassword(user, reason)
+
+		}(sr.Entries[index])
 	}
+
+	waitGroup.Wait()
+}
+
+func showResetUserPassword(user, reason string) {
+	fmt.Printf("%s need to be recreated", user)
 }
 
 func resetUserPassword(user, reason string) {
@@ -173,24 +202,53 @@ func resetUserPassword(user, reason string) {
 func restoreUsers() {
 	users := getJiraUsers()
 
-	for _, user := range users {
-		fmt.Printf("User %s-%s-%s-%s will be re-recreated based on Jira Information\n",
-			user.UserName,
-			user.FirstName,
-			user.LastName,
-			user.Email)
+	waitGroup := sync.WaitGroup{}
 
-		restoreUser(
-			user.UserName,
-			user.FirstName,
-			user.LastName,
-			user.Email)
+	waitGroup.Add(len(users))
+
+	guard := make(chan struct{}, 100)
+
+	for index := range users {
+
+		guard <- struct{}{}
+
+		go func(u User) {
+			// when this goroutine finished, make sure to :
+			// - mark the waitGroup for this goroutine as finished; and
+			// - release the guard, so the next goroutine can be run.
+			defer func() {
+				waitGroup.Done()
+				<-guard
+			}()
+
+			restoreUser(
+				u.UserName,
+				u.FirstName,
+				u.LastName,
+				u.Email)
+		}(users[index])
+
 	}
 
+	waitGroup.Wait()
+}
+
+func showRestoreUser(user, firstName, lastName, email string) {
+	fmt.Printf("User %s-%s-%s-%s will be re-recreated based on Jira Information\n",
+		user,
+		firstName,
+		lastName,
+		email)
 }
 
 func restoreUser(user, firstName, lastName, email string) {
 	URL := "https://accounts.jenkins.io/admin/doSignup"
+
+	fmt.Printf("User %s-%s-%s-%s will be re-recreated based on Jira Information\n",
+		user,
+		firstName,
+		lastName,
+		email)
 
 	message := "Because of the recent outage that happened on the Jenkins LDAP database, we decided to recreate Jenkins user account based on information we have from issues.jenkins-ci.org. More information here https://groups.google.com/forum/#!topic/jenkinsci-dev/3UvrCTflXGk"
 
