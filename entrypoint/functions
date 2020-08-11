@@ -12,8 +12,8 @@
 function is_ssl_certs {
   if [ ! -f "/etc/ldap/ssl/$OPENLDAP_SSL_KEY" ]; then exit "File /etc/ldap/ssl/${OPENLDAP_SSL_KEY} doesn't exist" ;fi
   if [ ! -f "/etc/ldap/ssl/$OPENLDAP_SSL_CRT" ]; then exit "File /etc/ldap/ssl/${OPENLDAP_SSL_CRT} doesn't exist" ;fi
-  if [ ! -f "/etc/ldap/ssl/$OPENLDAP_SSL_CA" ]; then exit "File /etc/ldap/ssl/${OPENLDAP_SSL_CA} doesn't exist" ;fi
-  certtool --verify --infile "/etc/ldap/ssl/${OPENLDAP_SSL_CRT}" --load-ca-certificate "/etc/ldap/ssl/${OPENLDAP_SSL_CA}"
+  if [ ! -f "$OPENLDAP_SSL_CA_ROOTDIR/$OPENLDAP_SSL_CA" ]; then exit "File $OPENLDAP_SSL_CA_ROOTDIR/${OPENLDAP_SSL_CA} doesn't exist" ;fi
+  certtool --verify --infile "/etc/ldap/ssl/${OPENLDAP_SSL_CRT}" --load-ca-certificate "${OPENLDAP_SSL_CA_ROOTDIR}/${OPENLDAP_SSL_CA}"
 
 }
 
@@ -32,9 +32,9 @@ function configure_slapd() {
   sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/ldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_CA_ROOTDIR#${OPENLDAP_SSL_CA_ROOTDIR}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/ldap/slapd.conf
-  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/ldap/slapd.conf
 
   # Dynamic configuration is cumbersome to update, so we convert the static configuration file
   # to ldif
