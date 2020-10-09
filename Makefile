@@ -28,7 +28,7 @@ cron-shell:
 	@docker run -i -t --rm \
 		-p 389:389 \
 		-p 636:636 \
-		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl-ca/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
 		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
@@ -49,7 +49,7 @@ cron-mock:
 	@docker run -i -t --rm \
 		-p 389:389 \
 		-p 636:636 \
-		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl-ca/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
 		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
@@ -59,7 +59,7 @@ mock:
 	@docker run -i -t --rm \
 		-p 389:389 \
 		-p 636:636 \
-		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl/cacert.pem:ro \
+		-v `pwd`/ssl/ca.pem:/etc/ldap/ssl-ca/cacert.pem:ro \
 		-v `pwd`/ssl/ldap.pem:/etc/ldap/ssl/cert.pem:ro \
 		-v `pwd`/ssl/ldap.key:/etc/ldap/ssl/privkey.key:ro \
 		-v `pwd`/mock.ldif:/var/backups/backup.latest.ldif \
