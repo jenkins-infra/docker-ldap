@@ -31,8 +31,8 @@ function configure_slapd() {
   sed -i "s#OPENLDAP_ADMIN_PASSWORD#$openldap_admin_password_md5#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/ldap/slapd.conf
-  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CA_ROOTDIR#${OPENLDAP_SSL_CA_ROOTDIR}#g" /etc/ldap/slapd.conf
+  sed -i "s#OPENLDAP_SSL_CA#${OPENLDAP_SSL_CA}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_KEY#${OPENLDAP_SSL_KEY}#g" /etc/ldap/slapd.conf
   sed -i "s#OPENLDAP_SSL_CRT#${OPENLDAP_SSL_CRT}#g" /etc/ldap/slapd.conf
 
