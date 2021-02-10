@@ -21,6 +21,7 @@ build:
 		--label "org.label-schema.vcs-ref=$(GIT_COMMIT_REV)" \
 		--label "org.opencontainers.image.created=$(BUILD_DATE)" \
 		--label "org.label-schema.build-date=$(BUILD_DATE)" \
+		--label "io.jenkins-tools.tree.state=$(GIT_TREE_STATE)" \
 		-t $(IMAGE):$(TAG) \
 		-t $(IMAGE):latest \
 		.
@@ -35,6 +36,7 @@ build:
 		--label "org.label-schema.vcs-ref=$(GIT_COMMIT_REV)" \
 		--label "org.opencontainers.image.created=$(BUILD_DATE)" \
 		--label "org.label-schema.build-date=$(BUILD_DATE)" \
+		--label "io.jenkins-tools.tree.state=$(GIT_TREE_STATE)" \
 		-t $(IMAGE):cron-$(TAG) \
 		-t $(IMAGE):cron-latest \
 		-f Dockerfile.cron \
