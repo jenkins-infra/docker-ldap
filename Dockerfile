@@ -1,4 +1,4 @@
-FROM debian:9
+FROM debian:10
 
 ENV OPENLDAP_CONFIG_ADMIN_DN 'cn=admin,cn=config'
 ENV OPENLDAP_CONFIG_ADMIN_PASSWORD config
@@ -43,7 +43,7 @@ RUN \
   apt-get -y update && \
   LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y \
     procps \
-    ca-cacert \
+    ca-certificates \
     gnutls-bin \
     slapd \
     ldap-utils \
