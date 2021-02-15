@@ -1,7 +1,6 @@
 .PHONY: build run shell mock
 
 COMMIT         := $(shell git rev-parse HEAD | cut -c1-6)
-BUILD_DATE     := $(shell date +%Y-%m-%dT%H:%M:%SZ)
 GIT_TREE_STATE := $(shell test -z "`git status --porcelain`" && echo "clean" || echo "dirty")
 GIT_SCM_URL    := $(shell git config --get remote.origin.url)
 SCM_URI        := $(subst git@github.com:,https://github.com/,$(GIT_SCM_URL))
@@ -13,7 +12,7 @@ TAG = $(COMMIT)
 build:
 	docker build \
 		--no-cache \
-    --label "org.opencontainers.image.source=$(GIT_SCM_URL)" \
+		--label "org.opencontainers.image.source=$(GIT_SCM_URL)" \
 		--label "org.label-schema.vcs-url=$(GIT_SCM_URL)" \
 		--label "org.opencontainers.image.url=$(SCM_URI)" \
 		--label "org.label-schema.url=$(SCM_URI)" \
@@ -28,7 +27,7 @@ build:
 	docker build \
 		--build-arg \
 			BASE_IMAGE=$(IMAGE):$(TAG) \
-    --label "org.opencontainers.image.source=$(GIT_SCM_URL)" \
+		--label "org.opencontainers.image.source=$(GIT_SCM_URL)" \
 		--label "org.label-schema.vcs-url=$(GIT_SCM_URL)" \
 		--label "org.opencontainers.image.url=$(SCM_URI)" \
 		--label "org.label-schema.url=$(SCM_URI)" \
