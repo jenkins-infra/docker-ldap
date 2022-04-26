@@ -134,7 +134,8 @@ func run() {
 
 		}
 		// Only reject users with an account created after seniorityCriteriaDate and we assume that
-		// users without creation_date were created before 2015/22/11 (https://git.io/JeGCl)
+		// users without creation_date were created before 2015/22/11
+		// (https://github.com/jenkins-infra/account-app/commit/8a9ac10227a6175c8f51a37bf6290e8a39756175)
 
 		if date.After(pivotDate) {
 			newAccounts = append(newAccounts, []string{cn, mail, creationDate, githubUsername})
