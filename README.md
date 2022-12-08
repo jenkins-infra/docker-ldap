@@ -1,4 +1,7 @@
 # OpenLdap
+
+[![](https://img.shields.io/docker/pulls/jenkinsciinfra/ldap?label=jenkinsciinfra%2Fldap&logo=docker&logoColor=white)](https://hub.docker.com/r/jenkinsciinfra/ldap/tags)
+
 OpenLdap docker image used for Jenkins Infrastructure Project
 This project defines two docker images, one that run openldap and a second one that run a cron daemon who periodically backup the database
 
