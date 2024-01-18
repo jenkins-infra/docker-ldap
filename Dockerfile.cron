@@ -1,14 +1,18 @@
 ARG BASE_IMAGE
 
+# TODO: switch to docker-bake
+#hadolint ignore=DL3006
 FROM $BASE_IMAGE
 
 ENV OPENLDAP_ENDPOINT ldap.jenkins.io
 
 COPY entrypoint/cron /entrypoint/cron
 
+# Always install latest version of APT packages
+#hadolint ignore=DL3008
 RUN \
-  apt-get -y update && \
-  apt-get install -y\
+  apt-get --yes update && \
+  apt-get install --no-install-recommends --yes \
     curl \
     cron && \
   apt-get clean &&\
