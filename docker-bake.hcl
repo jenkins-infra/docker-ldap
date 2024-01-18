@@ -62,10 +62,8 @@ target "ldap" {
 }
 
 target "ldap-cron" {
-  dockerfile = "Dockerfile"
-  context = "."
-  target = "ldap"
-  platforms = ["linux/amd64"]
+  inherits = ["ldap"]
+  target = "ldap-cron"
   tags = [
     "${REGISTRY}/${IMAGE_NAME}:cron-latest",
     notequal("", TAG_NAME) ? "${REGISTRY}/${IMAGE_NAME}:cron-${TAG_NAME}" : ""
