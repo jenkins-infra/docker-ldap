@@ -39,6 +39,8 @@ RUN \
   chmod 0755 /entrypoint/restore && \
   chmod 0755 /sbin/tini
 
+# Alays install latest version of APT packages
+#hadolint ignore=DL3008
 RUN \
   apt-get -y update && \
   LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
