@@ -1,0 +1,4 @@
+parallelDockerUpdatecli([
+  imageName: 'ldap',
+  rebuildImageOnPeriodicJob: true,
+])
