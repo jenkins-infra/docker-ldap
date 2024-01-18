@@ -41,7 +41,7 @@ RUN \
 
 RUN \
   apt-get -y update && \
-  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     procps \
     ca-certificates \
     gnutls-bin \
