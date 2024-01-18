@@ -1,4 +1,5 @@
-parallelDockerUpdatecli([
-  imageName: 'ldap',
-  rebuildImageOnPeriodicJob: true,
+buildDockerAndPublishImage('ldap', [
+  automaticSemanticVersioning: true,
+  gitCredentials: 'github-app-infra',
+  dockerBakeFile: 'docker-bake.hcl',
 ])
