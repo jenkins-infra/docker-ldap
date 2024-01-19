@@ -10,36 +10,7 @@ IMAGE = jenkinsciinfra/ldap
 TAG = $(COMMIT)
 
 build:
-	docker build \
-		--no-cache \
-		--label "org.opencontainers.image.source=$(GIT_SCM_URL)" \
-		--label "org.label-schema.vcs-url=$(GIT_SCM_URL)" \
-		--label "org.opencontainers.image.url=$(SCM_URI)" \
-		--label "org.label-schema.url=$(SCM_URI)" \
-		--label "org.opencontainers.image.revision=$(GIT_COMMIT_REV)" \
-		--label "org.label-schema.vcs-ref=$(GIT_COMMIT_REV)" \
-		--label "org.opencontainers.image.created=$(BUILD_DATE)" \
-		--label "org.label-schema.build-date=$(BUILD_DATE)" \
-		--label "io.jenkins-tools.tree.state=$(GIT_TREE_STATE)" \
-		-t $(IMAGE):$(TAG) \
-		-t $(IMAGE):latest \
-		.
-	docker build \
-		--build-arg \
-			BASE_IMAGE=$(IMAGE):$(TAG) \
-		--label "org.opencontainers.image.source=$(GIT_SCM_URL)" \
-		--label "org.label-schema.vcs-url=$(GIT_SCM_URL)" \
-		--label "org.opencontainers.image.url=$(SCM_URI)" \
-		--label "org.label-schema.url=$(SCM_URI)" \
-		--label "org.opencontainers.image.revision=$(GIT_COMMIT_REV)" \
-		--label "org.label-schema.vcs-ref=$(GIT_COMMIT_REV)" \
-		--label "org.opencontainers.image.created=$(BUILD_DATE)" \
-		--label "org.label-schema.build-date=$(BUILD_DATE)" \
-		--label "io.jenkins-tools.tree.state=$(GIT_TREE_STATE)" \
-		-t $(IMAGE):cron-$(TAG) \
-		-t $(IMAGE):cron-latest \
-		-f Dockerfile.cron \
-		.
+	docker buildx bake --file=docker-bake.hcl
 
 echo:
 	echo $(IMAGE):$(TAG) $(IMAGE):$(BRANCH)

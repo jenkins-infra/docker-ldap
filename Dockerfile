@@ -1,4 +1,4 @@
-FROM debian:10
+FROM debian:10 AS ldap
 
 ENV OPENLDAP_CONFIG_ADMIN_DN 'cn=admin,cn=config'
 ENV OPENLDAP_CONFIG_ADMIN_PASSWORD config
@@ -39,9 +39,11 @@ RUN \
   chmod 0755 /entrypoint/restore && \
   chmod 0755 /sbin/tini
 
+# Always install latest version of APT packages
+#hadolint ignore=DL3008
 RUN \
-  apt-get -y update && \
-  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  apt-get --yes update && \
+  LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --yes \
     procps \
     ca-certificates \
     gnutls-bin \
@@ -67,3 +69,30 @@ RUN \
   chown openldap:openldap /var/run/slapd
 
 ENTRYPOINT [ "/sbin/tini","--","/entrypoint/start" ]
+
+FROM ldap AS ldap-cron
+
+ENV OPENLDAP_ENDPOINT ldap.jenkins.io
+
+COPY entrypoint/cron /entrypoint/cron
+
+# Always install latest version of APT packages
+#hadolint ignore=DL3008
+RUN \
+  apt-get --yes update && \
+  apt-get install --no-install-recommends --yes \
+    curl \
+    cron && \
+  apt-get clean &&\
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Backup entrypoint needs to be run as root as it also configure slapd.conf.
+# This behaviour must be changed to be run as ldap user but it requires more testing.
+
+COPY crontabs/ldap /etc/cron.d/ldap
+
+RUN \
+  chmod 0755 /entrypoint/cron && \
+  chmod 0644 /etc/cron.d/ldap
+
+ENTRYPOINT [ "/sbin/tini","--","/entrypoint/cron" ]
