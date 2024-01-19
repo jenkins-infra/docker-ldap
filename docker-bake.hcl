@@ -38,7 +38,7 @@ target "ldap" {
   dockerfile = "Dockerfile"
   context = "."
   target = "ldap"
-  platforms = ["linux/amd64"]
+  platforms = ["linux/amd64", "linux/arm64"]
   tags = [
     "${REGISTRY}/${IMAGE_NAME}:latest",
     notequal("", TAG_NAME) ? "${REGISTRY}/${IMAGE_NAME}:${TAG_NAME}" : ""
