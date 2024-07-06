@@ -30,7 +30,7 @@ COPY entrypoint/restore.sh /entrypoint/restore
 COPY entrypoint/functions /entrypoint/functions
 
 ARG TARGETARCH
-ARG TINI_VERSION=v0.18.0
+ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/"${TINI_VERSION}"/tini-"${TARGETARCH}" /sbin/tini
 
 RUN \
