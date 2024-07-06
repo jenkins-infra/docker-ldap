@@ -1,0 +1,46 @@
+---
+name: Bump `tini` version
+
+scms:
+  default:
+    kind: github
+    spec:
+      user: "{{ .github.user }}"
+      email: "{{ .github.email }}"
+      owner: "{{ .github.owner }}"
+      repository: "{{ .github.repository }}"
+      token: "{{ requiredEnv .github.token }}"
+      username: "{{ .github.username }}"
+      branch: "{{ .github.branch }}"
+
+sources:
+  lastVersion:
+    kind: githubrelease
+    name: Get the latest ASDF version
+    spec:
+      owner: krallin
+      repository: tini
+      token: "{{ requiredEnv .github.token }}"
+      username: "{{ .github.username }}"
+
+targets:
+  updateDockerfileArgVersion:
+    name: 'feat: Bump `tini` version to {{ source "lastVersion" }}'
+    sourceid: lastVersion
+    kind: dockerfile
+    spec:
+      file: Dockerfile
+      instruction:
+        keyword: ARG
+        matcher: TINI_VERSION
+    scmid: default
+
+actions:
+  default:
+    kind: github/pullrequest
+    scmid: default
+    title: Bump `tini` version to {{ source "lastVersion" }}
+    spec:
+      labels:
+        - dependencies
+        - tini
