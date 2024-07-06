@@ -15,7 +15,6 @@ ENV OPENLDAP_SSL_CA_ROOTDIR '/etc/ldap/ssl-ca'
 
 EXPOSE 389 636
 
-
 RUN \
   addgroup --gid 101 openldap && \
   useradd -d /var/lib/ldap/ -g openldap -m -u 101 openldap
@@ -30,7 +29,9 @@ COPY entrypoint/healthcheck.sh /entrypoint/healthcheck
 COPY entrypoint/restore.sh /entrypoint/restore
 COPY entrypoint/functions /entrypoint/functions
 
-ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /sbin/tini
+ARG TARGETARCH
+ARG TINI_VERSION=v0.18.0
+ADD https://github.com/krallin/tini/releases/download/"${TINI_VERSION}"/tini-"${TARGETARCH}" /sbin/tini
 
 RUN \
   chmod 0755 /entrypoint/start && \
