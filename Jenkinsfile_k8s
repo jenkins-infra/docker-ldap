@@ -1,5 +1,5 @@
-buildDockerAndPublishImage('ldap', [
+parallelDockerUpdatecli([
+  imageName: 'ldap',
   automaticSemanticVersioning: true,
-  gitCredentials: 'github-app-infra',
   dockerBakeFile: 'docker-bake.hcl',
 ])
