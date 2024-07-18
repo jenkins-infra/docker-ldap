@@ -1,5 +1,7 @@
 parallelDockerUpdatecli([
   imageName: 'ldap',
-  automaticSemanticVersioning: true,
-  dockerBakeFile: 'docker-bake.hcl',
+  buildDockerConfig: [
+    automaticSemanticVersioning: true,
+    dockerBakeFile: 'docker-bake.hcl',
+  ],
 ])
