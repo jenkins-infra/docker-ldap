@@ -1,7 +1,4 @@
-parallelDockerUpdatecli([
-  imageName: 'ldap',
-  buildDockerConfig: [
-    automaticSemanticVersioning: true,
-    dockerBakeFile: 'docker-bake.hcl',
-  ],
-])
+buildDockerAndPublishImage('ldap', [ 
+  automaticSemanticVersioning: true,
+  dockerBakeFile: 'docker-bake.hcl',
+  ])
