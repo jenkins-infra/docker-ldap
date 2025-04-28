@@ -1,4 +1,3 @@
 buildDockerAndPublishImage('ldap', [
-  automaticSemanticVersioning: true,
   dockerBakeFile: 'docker-bake.hcl',
   ])
