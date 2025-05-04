@@ -1,17 +1,17 @@
 FROM debian:10 AS ldap
 
-ENV OPENLDAP_CONFIG_ADMIN_DN 'cn=admin,cn=config'
-ENV OPENLDAP_CONFIG_ADMIN_PASSWORD config
-ENV OPENLDAP_ADMIN_DN 'cn=admin,dc=jenkins-ci,dc=org'
-ENV OPENLDAP_ADMIN_PASSWORD 's3cr3t'
-ENV OPENLDAP_BACKUP_PATH /var/backups
-ENV OPENLDAP_BACKUP_FILE 'backup.latest.ldif'
-ENV OPENLDAP_DATABASE 'dc=jenkins-ci,dc=org'
-ENV OPENLDAP_DEBUG_LEVEL 256
-ENV OPENLDAP_SSL_KEY 'privkey.key'
-ENV OPENLDAP_SSL_CRT 'cert.pem'
-ENV OPENLDAP_SSL_CA 'ca.crt'
-ENV OPENLDAP_SSL_CA_ROOTDIR '/etc/ldap/ssl-ca'
+ENV OPENLDAP_CONFIG_ADMIN_DN='cn=admin,cn=config'
+ENV OPENLDAP_CONFIG_ADMIN_PASSWORD=config
+ENV OPENLDAP_ADMIN_DN='cn=admin,dc=jenkins-ci,dc=org'
+ENV OPENLDAP_ADMIN_PASSWORD='s3cr3t'
+ENV OPENLDAP_BACKUP_PATH=/var/backups
+ENV OPENLDAP_BACKUP_FILE='backup.latest.ldif'
+ENV OPENLDAP_DATABASE='dc=jenkins-ci,dc=org'
+ENV OPENLDAP_DEBUG_LEVEL=256
+ENV OPENLDAP_SSL_KEY='privkey.key'
+ENV OPENLDAP_SSL_CRT='cert.pem'
+ENV OPENLDAP_SSL_CA='ca.crt'
+ENV OPENLDAP_SSL_CA_ROOTDIR='/etc/ldap/ssl-ca'
 
 EXPOSE 389 636
 
@@ -45,18 +45,18 @@ RUN \
 RUN \
   apt-get --yes update && \
   LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --yes \
-    procps \
-    ca-certificates \
-    gnutls-bin \
-    slapd \
-    ldap-utils \
-    libsasl2-modules \
-    libsasl2-modules-db \
-    libsasl2-modules-gssapi-mit \
-    libsasl2-modules-ldap \
-    libsasl2-modules-otp \
-    libsasl2-modules-sql \
-    openssl && \
+  procps \
+  ca-certificates \
+  gnutls-bin \
+  slapd \
+  ldap-utils \
+  libsasl2-modules \
+  libsasl2-modules-db \
+  libsasl2-modules-gssapi-mit \
+  libsasl2-modules-ldap \
+  libsasl2-modules-otp \
+  libsasl2-modules-sql \
+  openssl && \
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -73,7 +73,7 @@ ENTRYPOINT [ "/sbin/tini","--","/entrypoint/start" ]
 
 FROM ldap AS ldap-cron
 
-ENV OPENLDAP_ENDPOINT ldap.jenkins.io
+ENV OPENLDAP_ENDPOINT=ldap.jenkins.io
 
 COPY entrypoint/cron /entrypoint/cron
 
@@ -82,8 +82,8 @@ COPY entrypoint/cron /entrypoint/cron
 RUN \
   apt-get --yes update && \
   apt-get install --no-install-recommends --yes \
-    curl \
-    cron && \
+  curl \
+  cron && \
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

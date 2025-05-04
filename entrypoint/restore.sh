@@ -9,7 +9,8 @@ set -e
 
 if [ ! -f "${OPENLDAP_BACKUP_PATH}/${OPENLDAP_RESTORE_FILE}" ]
 then
-    exit "${OPENLDAP_BACKUP_PATH}/${OPENLDAP_RESTORE_FILE} not found"
+    echo "${OPENLDAP_BACKUP_PATH}/${OPENLDAP_RESTORE_FILE} not found"
+    exit 1
 fi
 
 echo "Restore ${OPENLDAP_BACKUP_PATH}/${OPENLDAP_RESTORE_FILE}"
