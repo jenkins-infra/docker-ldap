@@ -1,4 +1,5 @@
-FROM debian:10 AS ldap
+ARG BOOKWORM_TAG=20250428
+FROM debian:bookworm-"${BOOKWORM_TAG}"-slim AS ldap
 
 ENV OPENLDAP_CONFIG_ADMIN_DN='cn=admin,cn=config'
 ENV OPENLDAP_CONFIG_ADMIN_PASSWORD=config
