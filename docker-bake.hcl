@@ -9,7 +9,7 @@ variable "IMAGE_NAME" {
   default = "ldap"
 }
 
-variable "TAG_NAME" {
+variable "NEXT_VERSION" {
   default = ""
 }
 
@@ -41,7 +41,7 @@ target "ldap" {
   platforms = ["linux/amd64", "linux/arm64"]
   tags = [
     "${REGISTRY}/${IMAGE_NAME}:latest",
-    notequal("", TAG_NAME) ? "${REGISTRY}/${IMAGE_NAME}:${TAG_NAME}" : ""
+    notequal("", NEXT_VERSION) ? "${REGISTRY}/${IMAGE_NAME}:${NEXT_VERSION}" : ""
   ]
   args = {
     GIT_COMMIT_REV="${GIT_COMMIT_REV}",
@@ -66,6 +66,6 @@ target "ldap-cron" {
   target = "ldap-cron"
   tags = [
     "${REGISTRY}/${IMAGE_NAME}:cron-latest",
-    notequal("", TAG_NAME) ? "${REGISTRY}/${IMAGE_NAME}:cron-${TAG_NAME}" : ""
+    notequal("", NEXT_VERSION) ? "${REGISTRY}/${IMAGE_NAME}:cron-${NEXT_VERSION}" : ""
   ]
 }
