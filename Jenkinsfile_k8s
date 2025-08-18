@@ -1,3 +1,4 @@
 buildDockerAndPublishImage('ldap', [
+  publishToPrivateAzureRegistry: true,
   dockerBakeFile: 'docker-bake.hcl',
-  ])
+])
